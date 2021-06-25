@@ -1,0 +1,1 @@
+Проект для курса Основы Django Framework GB.
