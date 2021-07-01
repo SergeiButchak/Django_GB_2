@@ -1,10 +1,9 @@
 from django.shortcuts import render
-import os
+from django.core import serializers
+from products.models import Product
 import json
-
 # Create your views here.
 
-MODULE_DIR = os.path.dirname(__file__)
 
 def index(request):
     context = {
@@ -17,6 +16,5 @@ def products(request):
     context = {
         "title": "GeekShop - Каталог",
     }
-    file_path = os.path.join(MODULE_DIR, 'fixtures/products.json')
-    context['products'] = json.load(open(file_path, encoding="utf-8"))
+    context['products'] = Product.objects.all()
     return render(request, 'products/products.html', context)

@@ -58,14 +58,14 @@
                     <div class="card h-100">
                         <a href="#">
                             <img class="card-img-top"
-                                 src="{% static product.img %}"
+                                 src="{{ product.image.url }}"
                                  alt="">
                         </a>
                         <div class="card-body">
                             <h4 class="card-title">
                                 <a href="#">{{ product.name }}</a>
                             </h4>
-                            <h5>{{product.price }},00 руб.</h5>
+                            <h5>{{product.price }} руб.</h5>
                             <p class="card-text">{{ product.description }}</p>
                         </div>
                         <div class="card-footer text-center">
