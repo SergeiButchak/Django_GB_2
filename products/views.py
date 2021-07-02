@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.core import serializers
-from products.models import Product
+from products.models import Product, ProductCategory
 import json
 # Create your views here.
 
@@ -17,4 +17,5 @@ def products(request):
         "title": "GeekShop - Каталог",
     }
     context['products'] = Product.objects.all()
+    context['categories'] = ProductCategory.objects.all()
     return render(request, 'products/products.html', context)
