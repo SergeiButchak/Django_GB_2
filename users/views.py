@@ -2,6 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
 from django.urls import reverse
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from baskets.models import Basket
 # Create your views here.
 
 
@@ -20,6 +21,7 @@ def login(request):
     context = {
         'title': 'GeekShop - Авторизация',
         'form': form,
+        'baskets': Basket.objects.all(),
     }
     return render(request, 'users/login.html', context)
 
