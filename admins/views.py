@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import messages
 from django.urls import reverse
 from users.models import User
-from admins.forms import UserAdminRegistrationForm
+from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm
 
 def admins(request):
     context = {'title': 'GeekShop - Admin'}
@@ -23,7 +23,7 @@ def admin_users_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Пользователь создан')
-            return HttpResponseRedirect(reverse('admins:create'))
+            return HttpResponseRedirect(reverse('admins:read'))
     else:
         form = UserAdminRegistrationForm()
     context = {
@@ -33,7 +33,26 @@ def admin_users_create(request):
     return render(request, 'admins/admin-users-create.html', context)
 
 
-def admin_users_update_delete(request, id):
+def admin_users_update(request, pk):
+    user = User.objects.get(id=pk)
+    if request.method == 'POST':
+        form = UserAdminProfileForm(instance=user, files=request.FILES, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Измененеия сохранены.')
+            return HttpResponseRedirect(reverse('admins:users_read'))
+    else:
+        form = UserAdminProfileForm(instance=user)
+        # print(r.total_quantity)
+    context = {
+        'title': 'Admin - Изменение пользователя.',
+        'form': form,
+        'user': user
+    }
+    return render(request, 'admins/admin-users-update-delete.html', context)
+
+def admin_users_delete(request, pk):
+    user = User.objects.get(id=pk)
     context = {'title': 'GeekShop - Admin'}
     return render(request, 'admins/admin-users-update-delete.html', context)
 # Create your views here.
