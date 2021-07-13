@@ -4,6 +4,7 @@ from django.urls import reverse
 from users.models import User
 from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm
 
+
 def admins(request):
     context = {'title': 'GeekShop - Admin'}
     return render(request, 'admins/admins.html', context)
@@ -51,8 +52,10 @@ def admin_users_update(request, pk):
     }
     return render(request, 'admins/admin-users-update-delete.html', context)
 
+
 def admin_users_delete(request, pk):
     user = User.objects.get(id=pk)
-    context = {'title': 'GeekShop - Admin'}
-    return render(request, 'admins/admin-users-update-delete.html', context)
+    user.is_active = False
+    user.save()
+    return HttpResponseRedirect(reverse('admins:users_read'))
 # Create your views here.
