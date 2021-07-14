@@ -2,6 +2,7 @@ from django import forms
 
 from users.forms import UserRegistrationForm, UserProfileForm
 from users.models import User
+from products.models import ProductCategory, Product
 
 class UserAdminRegistrationForm(UserRegistrationForm):
     image = forms.ImageField(widget=forms.FileInput(attrs={'class': 'custom-file-input'}), required=False)
@@ -13,3 +14,15 @@ class UserAdminRegistrationForm(UserRegistrationForm):
 class UserAdminProfileForm(UserProfileForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
     email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control py-4'}))
+
+
+class CategoryAdminCreateForm(forms.Form):
+    name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4'}))
+
+    class Meta:
+        model = ProductCategory
+        fields = ('name', 'description')
+
+    def save(self, *args, **kwargs):
+        ProductCategory.objects.create(name=self.data['name'], description=self.data['description'])

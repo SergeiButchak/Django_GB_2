@@ -4,8 +4,7 @@ from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 from users.models import User
 from products.models import ProductCategory, Product
-from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm
-
+from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm, CategoryAdminCreateForm
 
 @user_passes_test(lambda u: u.is_staff)
 def admins(request):
@@ -29,7 +28,7 @@ def admin_users_create(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Пользователь создан')
-            return HttpResponseRedirect(reverse('admins:read'))
+            return HttpResponseRedirect(reverse('admins:users_read'))
     else:
         form = UserAdminRegistrationForm()
     context = {
@@ -79,18 +78,18 @@ def admin_cat_read(request):
 @user_passes_test(lambda u: u.is_staff)
 def admin_cat_create(request):
     if request.method == 'POST':
-        form = UserAdminRegistrationForm(data=request.POST, files=request.FILES)
+        form = CategoryAdminCreateForm(data=request.POST)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Пользователь создан')
-            return HttpResponseRedirect(reverse('admins:read'))
+            messages.success(request, 'Категория добавлена')
+            return HttpResponseRedirect(reverse('admins:cat_read'))
     else:
-        form = UserAdminRegistrationForm()
+        form = CategoryAdminCreateForm()
     context = {
-        'title': 'Admin - Создание пользователя.',
+        'title': 'Admin - Добавление категории товаров.',
         'form': form
     }
-    return render(request, 'admins/admin-users-create.html', context)
+    return render(request, 'admins/admin-cat-create.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff)
