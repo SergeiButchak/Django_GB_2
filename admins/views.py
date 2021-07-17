@@ -154,17 +154,17 @@ def admin_prod_create(request):
 def admin_prod_update(request, pk):
     product = Product.objects.get(id=pk)
     if request.method == 'POST':
-        form = CategoryAdminCreateForm(instance=product, data=request.POST)
+        form = ProductAdminCreateForm(instance=product, files=request.FILES, data=request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Измененеия сохранены.')
             return HttpResponseRedirect(reverse('admins:prod_read'))
     else:
-        form = CategoryAdminCreateForm(instance=product)
+        form = ProductAdminCreateForm(instance=product)
     context = {
         'title': 'Admin - Изменение товара.',
         'form': form,
-        'category': product
+        'product': product
     }
     return render(request, 'admins/admin-prod-update-delete.html', context)
 
