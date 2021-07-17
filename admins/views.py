@@ -4,7 +4,8 @@ from django.contrib.auth.decorators import user_passes_test
 from django.urls import reverse
 from users.models import User
 from products.models import ProductCategory, Product
-from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm, CategoryAdminCreateForm
+from admins.forms import UserAdminRegistrationForm, UserAdminProfileForm, CategoryAdminCreateForm, ProductAdminCreateForm
+
 
 @user_passes_test(lambda u: u.is_staff)
 def admins(request):
@@ -117,4 +118,57 @@ def admin_cat_delete(request, pk):
     category = ProductCategory.objects.get(id=pk)
     category.delete()
     return HttpResponseRedirect(reverse('admins:cat_read'))
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_prod_read(request):
+    context = {
+        'title': 'GeekShop - Admin',
+        'products': Product.objects.all(),
+    }
+    return render(request, 'admins/admin-prod-read.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_prod_create(request):
+    if request.method == 'POST':
+        form = ProductAdminCreateForm(data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'товар добавлен')
+            return HttpResponseRedirect(reverse('admins:prod_read'))
+    else:
+        form = ProductAdminCreateForm()
+    context = {
+        'title': 'Admin - Добавление товаров.',
+        'form': form
+    }
+    return render(request, 'admins/admin-prod-create.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_prod_update(request, pk):
+    product = Product.objects.get(id=pk)
+    if request.method == 'POST':
+        form = CategoryAdminCreateForm(instance=product, data=request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Измененеия сохранены.')
+            return HttpResponseRedirect(reverse('admins:prod_read'))
+    else:
+        form = CategoryAdminCreateForm(instance=product)
+    context = {
+        'title': 'Admin - Изменение товара.',
+        'form': form,
+        'category': product
+    }
+    return render(request, 'admins/admin-prod-update-delete.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff)
+def admin_prod_delete(request, pk):
+    product = Product.objects.get(id=pk)
+    product.delete()
+    return HttpResponseRedirect(reverse('admins:prod_read'))
+
 # Create your views here.
