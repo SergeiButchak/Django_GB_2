@@ -134,9 +134,13 @@ def admin_prod_create(request):
     if request.method == 'POST':
         form = ProductAdminCreateForm(data=request.POST)
         if form.is_valid():
+            print(form)
             form.save()
             messages.success(request, 'товар добавлен')
             return HttpResponseRedirect(reverse('admins:prod_read'))
+        else:
+            print(form.errors)
+
     else:
         form = ProductAdminCreateForm()
     context = {
