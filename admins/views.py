@@ -94,28 +94,27 @@ def admin_cat_create(request):
 
 @user_passes_test(lambda u: u.is_staff)
 def admin_cat_update(request, pk):
-    user = User.objects.get(id=pk)
+    category = ProductCategory.objects.get(id=pk)
     if request.method == 'POST':
-        form = UserAdminProfileForm(instance=user, files=request.FILES, data=request.POST)
+        form = CategoryAdminCreateForm(instance=category, data=request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, 'Измененеия сохранены.')
-            return HttpResponseRedirect(reverse('admins:users_read'))
+            return HttpResponseRedirect(reverse('admins:cat_read'))
     else:
-        form = UserAdminProfileForm(instance=user)
+        form = CategoryAdminCreateForm(instance=category)
         # print(r.total_quantity)
     context = {
-        'title': 'Admin - Изменение пользователя.',
+        'title': 'Admin - Изменение категории товара.',
         'form': form,
-        'user': user
+        'category': category
     }
-    return render(request, 'admins/admin-users-update-delete.html', context)
+    return render(request, 'admins/admin-cat-update-delete.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff)
 def admin_cat_delete(request, pk):
-    user = User.objects.get(id=pk)
-    user.is_active = False
-    user.save()
-    return HttpResponseRedirect(reverse('admins:users_read'))
+    category = ProductCategory.objects.get(id=pk)
+    category.delete()
+    return HttpResponseRedirect(reverse('admins:cat_read'))
 # Create your views here.

@@ -16,7 +16,7 @@ class UserAdminProfileForm(UserProfileForm):
     email = forms.CharField(widget=forms.EmailInput(attrs={'class': 'form-control py-4'}))
 
 
-class CategoryAdminCreateForm(forms.Form):
+class CategoryAdminCreateForm(forms.ModelForm):
     name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control py-4'}))
 
@@ -24,5 +24,3 @@ class CategoryAdminCreateForm(forms.Form):
         model = ProductCategory
         fields = ('name', 'description')
 
-    def save(self, *args, **kwargs):
-        ProductCategory.objects.create(name=self.data['name'], description=self.data['description'])
