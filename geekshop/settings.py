@@ -136,3 +136,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.user'
 
 LOGIN_URL = '/users/login/'
+
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = '25'
+# EMAIL_HOST_USER = 'django@gb.local'
+# EMAIL_HOST_PASSWORD = 'django'
+# python -m smtpd -n -c DebuggingServer localhost:25
+EMAIL_USE_SSL = False
+
+EMAIL_HOST_USER, EMAIL_HOST_PASSWORD = None, None
+
+DOMAIN = ' localhost:8000'
