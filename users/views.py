@@ -83,7 +83,7 @@ def verify(request, email, activation_key):
             user.save()
             auth.login(request, user)
             context = {'user': user}
-            return render(request, 'users/verify.html', context)
+        return render(request, 'users/verify.html', context)
     return HttpResponseRedirect(reverse('index'))
 
 
