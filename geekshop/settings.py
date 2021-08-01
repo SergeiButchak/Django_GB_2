@@ -146,4 +146,4 @@ EMAIL_USE_SSL = False
 
 EMAIL_HOST_USER, EMAIL_HOST_PASSWORD = None, None
 
-DOMAIN = ' localhost:8000'
+DOMAIN = 'http://localhost:8000'
