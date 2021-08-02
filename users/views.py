@@ -36,10 +36,9 @@ def registration(request):
         if form.is_valid():
             user = form.save()
             if send_verify_mail(user):
-                print('Success sending mail')
+                messages.success(request, f'Вы успешно зарегистрированы. На адрес {user.email} выслано письмо для активации учетной записи')
             else:
-                print('Sending mail failed')
-            messages.success(request, 'Вы успешно зарегистрированы.')
+                messages.warning(request, 'При отправке письма для активации учетной записи произошла ошибка')
             return HttpResponseRedirect(reverse('users:login'))
     else:
         form = UserRegistrationForm()
