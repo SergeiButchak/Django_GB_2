@@ -1,8 +1,12 @@
+from django.core.mail import send_mail
 from django.shortcuts import render, HttpResponseRedirect
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse
+
+from django.conf import settings
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from users.models import User
 from baskets.models import Basket
 # Create your views here.
 
@@ -30,8 +34,11 @@ def registration(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            messages.success(request, 'Вы успешно зарегистрированы.')
+            user = form.save()
+            if send_verify_mail(user):
+                messages.success(request, f'Вы успешно зарегистрированы. На адрес {user.email} выслано письмо для активации учетной записи')
+            else:
+                messages.warning(request, 'При отправке письма для активации учетной записи произошла ошибка')
             return HttpResponseRedirect(reverse('users:login'))
     else:
         form = UserRegistrationForm()
@@ -52,12 +59,9 @@ def profile(request):
             return HttpResponseRedirect(reverse('users:profile'))
     else:
         form = UserProfileForm(instance=request.user)
-        r = Basket.objects.filter(user=request.user)
-        # print(r.total_quantity)
     context = {
         'title': 'GeekShop - Личный кабинет',
         'form': form,
-        'baskets': Basket.objects.filter(user=request.user),
     }
     return render(request, 'users/profile.html', context)
 
@@ -65,3 +69,22 @@ def profile(request):
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
+
+
+def verify(request, email, activation_key):
+    user = User.objects.filter(email=email).first()
+    if user:
+        if user.activation_key == activation_key and not user.is_activation_key_expired():
+            user.is_active = True
+            user.save()
+            auth.login(request, user)
+            context = {'user': user}
+        return render(request, 'users/verify.html', context)
+    return HttpResponseRedirect(reverse('index'))
+
+
+def send_verify_mail(user):
+    subject = 'Verify your account'
+    link = reverse('users:verify', args=[user.email, user.activation_key])
+    message = f'{settings.DOMAIN}{link}'
+    return send_mail(subject, message, settings.EMAIL_HOST_USER, [user.email], fail_silently=False)
