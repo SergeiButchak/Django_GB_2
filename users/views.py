@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 
 from django.conf import settings
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileEditForm
 from users.models import User
 from baskets.models import Basket
 # Create your views here.
@@ -53,15 +53,18 @@ def registration(request):
 def profile(request):
     if request.method == 'POST':
         form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
-        if form.is_valid():
+        form_profile = UserProfileEditForm(instance=request.user.userprofile, data=request.POST)
+        if form.is_valid() and form_profile.is_valid():
             form.save()
             messages.success(request, 'Измененеия сохранены.')
             return HttpResponseRedirect(reverse('users:profile'))
     else:
         form = UserProfileForm(instance=request.user)
+        form_profile = UserProfileEditForm(instance=request.user.userprofile)
     context = {
         'title': 'GeekShop - Личный кабинет',
         'form': form,
+        'form_profile': form_profile,
     }
     return render(request, 'users/profile.html', context)
 
