@@ -25,7 +25,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$e7y5j9(f8k%kaaaw*lgr77y&^8gd-w3ivm=^-=k^9h+g16@(!'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -45,10 +45,13 @@ INSTALLED_APPS = [
     'baskets',
     'admins',
     'orders',
+    'debug_toolbar',
+    'template_profiler_panel',
 
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -57,7 +60,35 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
+
 ]
+# INTERNAL_IPS = ('127.0.0.1',)
+
+if DEBUG:
+   def show_toolbar(request):
+       return True
+
+   DEBUG_TOOLBAR_CONFIG = {
+       'SHOW_TOOLBAR_CALLBACK': show_toolbar,
+   }
+
+   DEBUG_TOOLBAR_PANELS = [
+       'debug_toolbar.panels.versions.VersionsPanel',
+       'debug_toolbar.panels.timer.TimerPanel',
+       'debug_toolbar.panels.settings.SettingsPanel',
+       'debug_toolbar.panels.headers.HeadersPanel',
+       'debug_toolbar.panels.request.RequestPanel',
+       'debug_toolbar.panels.sql.SQLPanel',
+       'debug_toolbar.panels.templates.TemplatesPanel',
+       'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+       'debug_toolbar.panels.cache.CachePanel',
+       'debug_toolbar.panels.signals.SignalsPanel',
+       'debug_toolbar.panels.logging.LoggingPanel',
+       'debug_toolbar.panels.redirects.RedirectsPanel',
+       'debug_toolbar.panels.profiling.ProfilingPanel',
+       'template_profiler_panel.panels.template.TemplateProfilerPanel',
+   ]
+
 
 ROOT_URLCONF = 'geekshop.urls'
 
@@ -137,7 +168,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'web_static')
+
 STATIC_URL = '/static/'
+
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
@@ -168,8 +202,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = 'tmp/mails'
 
 AUTHENTICATION_BACKENDS = (
-    'social_core.backends.google.GoogleOAuth2',
     'django.contrib.auth.backends.ModelBackend',
+    'social_core.backends.google.GoogleOAuth2',
 )
 
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
