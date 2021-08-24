@@ -74,13 +74,14 @@ class OrderCreateView(CreateView):
         if self.request.method == 'POST':
             formset = OrderFormSet(self.request.POST)
         else:
-            basket_items = Basket.objects.filter(user_id=self.request.user.id)
+            basket_items = Basket.objects.filter(user_id=self.request.user.id).select_related()
             if basket_items.exists():
                 OrderFormSet = inlineformset_factory(Order, OrderItem, form=OrderItemForm, extra=basket_items.count())
                 formset = OrderFormSet()
                 for num, form in enumerate(formset.forms):
-                    form.initial['product'] = basket_items[num].products
-                    form.initial['quantity'] = basket_items[num].quantity
+                    row = basket_items[num]
+                    form.initial['product'] = row.products
+                    form.initial['quantity'] = row.quantity
 
         context.update({
             'title': 'Geekshop: создание заказа',
@@ -91,7 +92,7 @@ class OrderCreateView(CreateView):
 
     def form_valid(self, form):
         orderitems = self.get_context_data()['orderitems']
-        basket_items = Basket.objects.filter(user=self.request.user)
+        basket_items = Basket.objects.filter(user=self.request.user).select_related()
 
         with transaction.atomic():
             form.instance.user = self.request.user
